@@ -49,7 +49,10 @@ def create_order(
         quantity=order_data.quantity,
         size=order_data.size,
         total_amount=total_amount,
-        status="processing"
+        status="processing",
+        email=order_data.email,
+        phone_number=order_data.phone_number,
+        shipping_address=order_data.shipping_address
     )
     db.add(order)
     db.commit()

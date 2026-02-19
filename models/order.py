@@ -15,6 +15,10 @@ class Order(Base):
     total_amount = Column(Float, nullable=False)
     status = Column(String, default="pending")  # pending, shipped, delivered
     order_date = Column(DateTime, default=datetime.utcnow)
+    
+    email = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
+    shipping_address = Column(String, nullable=True)
 
     user = relationship("User")
     product = relationship("Product")
