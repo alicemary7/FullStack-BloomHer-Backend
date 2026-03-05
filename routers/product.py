@@ -15,13 +15,10 @@ def create_product(
     db: Session = Depends(connect_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Only admins can create
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Forbidden")
     
     try:
-        # Use exclude_unset=True to only include fields provided in the request
-        # This prevents errors if the DB table is missing columns for optional fields
         product_data = data.model_dump(exclude_unset=True)
         product = Product(**product_data)
         db.add(product)
@@ -67,10 +64,8 @@ def update_product(
         raise HTTPException(status_code=404, detail="product not found")
     
     try:
-        # Get only the data that was sent in the request
         update_data = data.model_dump(exclude_unset=True)
         
-        # Update each field in the existing product object
         for key, value in update_data.items():
             setattr(target_product, key, value)
             
@@ -102,3 +97,4 @@ def delete_product(
     product.is_active = False
     db.commit()
     return {"message": "Product deactivated successfully"}
+

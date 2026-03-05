@@ -63,7 +63,6 @@ def login(data: UserLogin, db: Session = Depends(connect_db)):
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(connect_db)):
     if token == "admin-bypass-token":
-        # Return a mock admin user object to bypass authentication
         return User(id=999, email="admin@gmail.com", role="admin", name="System Admin")
 
     credentials_exception = HTTPException(
@@ -86,33 +85,25 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 @user_router.get("/")
 def get_all_users(db: Session = Depends(connect_db), current_user: User = Depends(get_current_user)):
-    # Check if the user making the request has the "admin" role
     if current_user.role != "admin":
-        # If not an admin, stop the request and return a 403 Forbidden error
         raise HTTPException(status_code=403, detail="Only admins can view all users")
     
-    # If the user IS an admin, proceed to fetch all users from the database
     users = db.query(User).all()
-    # Return the list of all users
     return users
 
 
 @user_router.get("/{user_id}")
 def get_user(user_id: int, db: Session = Depends(connect_db), current_user: User = Depends(get_current_user)):
-    # Check if the logged-in user is trying to view someone else's profile AND is not an admin
     if current_user.id != user_id and current_user.role != "admin":
-        # If they aren't the owner or an admin, deny access with a 403 error
         raise HTTPException(status_code=403, detail="Not authorized to view this user's details")
 
-    # Look for the user in the database by their ID
     user = db.query(User).filter(User.id == user_id).first()
 
-    # If the user doesn't exist in the database, return a 404 Not Found error
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-   
     return user
+
 
 
 
