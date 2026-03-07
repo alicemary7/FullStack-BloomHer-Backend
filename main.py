@@ -13,6 +13,17 @@ from routers.order import order_router
 from routers.review import review_router
 from routers.payment import payment_router
 
+from fastapi import FastAPI
+from mangum import Mangum
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "BloomHer backend running"}
+
+handler = Mangum(app)
+
 app=FastAPI()
 
 @app.on_event("startup")
