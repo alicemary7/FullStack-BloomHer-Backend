@@ -22,9 +22,7 @@ app = FastAPI()
 def home():
     return {"message": "BloomHer backend running"}
 
-handler = Mangum(app)
 
-app=FastAPI()
 
 @app.on_event("startup")
 def on_startup():
@@ -74,3 +72,5 @@ app.include_router(cart_router)
 app.include_router(order_router)
 app.include_router(review_router)
 app.include_router(payment_router)
+
+handler = Mangum(app)
