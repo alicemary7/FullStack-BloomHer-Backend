@@ -1,39 +1,52 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from dotenv import load_dotenv
-load_dotenv()
+from core.config import DATABASE_URL
 
-# Get DB URL from environment variables for Render deployment
-# Fallback to the hardcoded URL for local testing if needed
-db_url = os.environ.get("DATABASE_URL")
+# Get DB URL from config
+db_url = DATABASE_URL
+
 if not db_url:
-    # Local PostgreSQL connection string
-    # db_url = "postgresql://postgres:AcademyRootPassword@localhost:5432/fullstack_bloomher"
-    # db_url = "postgresql://e_commerce_cfl6_user:yHRmBPVWDe4romHRpvOLI5aOfKNzKgJ0@dpg-d6ighv15pdvs73e3f7ng-a.oregon-postgres.render.com/e_commerce_cfl6"
+    raise ValueError("DATABASE_URL is not set in environment variables")
 
-# Mask password for logging
-masked_url = db_url
-if "@" in db_url:
-    try:
-        # Extract host and database name, mask username and password
-        parts = db_url.split("@")
-        masked_url = parts[1]
-    except Exception:
-        masked_url = "URL Masking Error"
-print(f"Connecting to database at: {masked_url}")
-
-# Fix for Render/Heroku: update URLs starting with postgres:// to postgresql://
-if db_url and db_url.startswith("postgres://"):
+# Fix Render / Heroku postgres prefix issue
+if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+# Mask credentials for logging
+def mask_db_url(url: str):
+    try:
+        if "@" in url:
+            return "****:****@" + url.split("@")[1]
+        return url
+    except Exception:
+        return "Database URL"
+
+print(f"Connecting to database: {mask_db_url(db_url)}")
+
+# Create SQLAlchemy engine
 engine = create_engine(
-    db_url, 
-    connect_args={"connect_timeout": 10},
+    db_url,
     pool_pre_ping=True,
-    pool_recycle=3600
+    pool_recycle=3600,
+    connect_args={"connect_timeout": 10}
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Session maker
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
 
+# Base model
 Base = declarative_base()
+
+
+# Dependency for FastAPI
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
