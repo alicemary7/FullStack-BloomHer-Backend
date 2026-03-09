@@ -2,7 +2,11 @@ from dotenv import load_dotenv
 import os 
 load_dotenv()
 
-DATABASE_URL=os.getenv("DATABASE_URL")
+DB_USERNAME=os.getenv("DB_USERNAME")
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+DB_HOSTNAME=os.getenv("DB_HOSTNAME")
+DB_PORT=os.getenv("DB_PORT")
+DATABASE=os.getenv("DB_DATABASE")
 
 # Auth Settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-super-secret-key-change-it-in-production")
