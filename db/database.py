@@ -10,7 +10,7 @@ db_url = os.environ.get("DATABASE_URL")
 if not db_url:
     # Local PostgreSQL connection string
     # db_url = "postgresql://postgres:AcademyRootPassword@localhost:5432/fullstack_bloomher"
-    db_url = "postgresql://e_commerce_cfl6_user:yHRmBPVWDe4romHRpvOLI5aOfKNzKgJ0@dpg-d6ighv15pdvs73e3f7ng-a.oregon-postgres.render.com/e_commerce_cfl6"
+    # db_url = "postgresql://e_commerce_cfl6_user:yHRmBPVWDe4romHRpvOLI5aOfKNzKgJ0@dpg-d6ighv15pdvs73e3f7ng-a.oregon-postgres.render.com/e_commerce_cfl6"
 
 # Mask password for logging
 masked_url = db_url
