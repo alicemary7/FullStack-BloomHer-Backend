@@ -15,25 +15,28 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
+# @user_router.post("/signup")
+# def signup(data: UserSignup, db: Session = Depends(connect_db)):
+
+#     existing_user = db.query(User).filter(User.email == data.email).first()
+#     if existing_user:
+#         raise HTTPException(status_code=400, detail="Email already exists")
+
+#     user = User(
+#         name=data.name,
+#         email=data.email,
+#         password=get_password_hash(data.password),  
+#         role="user"
+#     )
+
+#     db.add(user)
+#     db.commit()
+#     db.refresh(user)
+
+#     return {"message": "Signup successful"}
 @user_router.post("/signup")
-def signup(data: UserSignup, db: Session = Depends(connect_db)):
-
-    existing_user = db.query(User).filter(User.email == data.email).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already exists")
-
-    user = User(
-        name=data.name,
-        email=data.email,
-        password=get_password_hash(data.password),  
-        role="user"
-    )
-
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    return {"message": "Signup successful"}
+def signup():
+    return {"status": "signup working"}
 
 
 @user_router.post("/login")
