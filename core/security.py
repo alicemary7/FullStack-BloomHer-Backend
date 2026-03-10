@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from core.config import SECRET_KEY, ALGORITHM
 
 # Adding argon2 as the primary scheme to avoid the bcrypt 72-byte bug in recent library versions
-pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
+# pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password, hashed_password):
