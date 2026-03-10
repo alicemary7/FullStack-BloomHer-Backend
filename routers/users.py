@@ -10,10 +10,23 @@ from datetime import timedelta
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from core.config import SECRET_KEY, ALGORITHM
+from fastapi.responses import JSONResponse
+import traceback
+from fastapi import Request
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
+
+@user_router.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": str(exc),
+            "trace": traceback.format_exc()
+        }
+    )
 
 @user_router.post("/signup")
 def signup(data: UserSignup, db: Session = Depends(connect_db)):
