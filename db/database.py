@@ -2,15 +2,25 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
+
+# Load environment variables from .env file
 load_dotenv()
 
-# Get DB URL from environment variables for Render deployment
-# Fallback to the hardcoded URL for local testing if needed
+# Get DB URL from environment variables
 db_url = os.environ.get("DATABASE_URL")
+
 if not db_url:
-    # Local PostgreSQL connection string
-    # db_url = "postgresql://postgres:AcademyRootPassword@localhost:5432/fullstack_bloomher"
-    db_url = "postgresql://postgres:bloomhersupabase@db.eculewruytwrzclbduht.supabase.co:5432/postgres"
+    # Attempt to construct from individual components if DATABASE_URL is missing
+    user = os.getenv("DB_USERNAME")
+    password = os.getenv("DB_PASSWORD")
+    host = os.getenv("DB_HOSTNAME")
+    port = os.getenv("DB_PORT", "5432")
+    db_name = os.getenv("DB_DATABASE")
+    
+    if all([user, password, host, db_name]):
+        db_url = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
+    else:
+        raise ValueError("Neither DATABASE_URL nor full set of DB components (USERNAME, PASSWORD, HOSTNAME, DATABASE) found in environment variables")
 
 # Mask password for logging
 masked_url = db_url
@@ -18,9 +28,10 @@ if "@" in db_url:
     try:
         # Extract host and database name, mask username and password
         parts = db_url.split("@")
-        masked_url = parts[1]
+        masked_url = f"***@{parts[1]}"
     except Exception:
         masked_url = "URL Masking Error"
+
 print(f"Connecting to database at: {masked_url}")
 
 # Fix for Render/Heroku: update URLs starting with postgres:// to postgresql://

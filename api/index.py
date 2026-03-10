@@ -73,5 +73,6 @@ app.include_router(user_router)
 app.include_router(cart_router)
 app.include_router(order_router)
 app.include_router(review_router)
+app.include_router(payment_router)
 # Alias for Vercel/Serverless deployment
-handler = app
+# handler = app
