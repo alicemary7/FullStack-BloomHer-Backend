@@ -35,8 +35,11 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 
 #     return {"message": "Signup successful"}
 @user_router.post("/signup")
-def signup():
-    return {"status": "signup working"}
+def signup(data: UserSignup, db: Session = Depends(connect_db)):
+    try:
+        existing_user = db.query(User).filter(User.email == data.email).first()
+    except Exception as e:
+        return {"db_error": str(e)}
 
 
 @user_router.post("/login")
