@@ -1,12 +1,16 @@
 from passlib.context import CryptContext
+
+# passlib is a password hashing library.
+# jose is a jwt library
+
 from jose import JWTError, jwt
+
 from datetime import datetime, timedelta
 from core.config import SECRET_KEY, ALGORITHM
 
-# Adding argon2 as the primary scheme to avoid the bcrypt 72-byte bug in recent library versions
-# pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# password verify function(login)
 
 def verify_password(plain_password, hashed_password):
     try:
@@ -16,10 +20,12 @@ def verify_password(plain_password, hashed_password):
         return plain_password == hashed_password
 
 
+# password hash function(signup)
+
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-# jwt token creation function
+# jwt token creation function(after login)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
