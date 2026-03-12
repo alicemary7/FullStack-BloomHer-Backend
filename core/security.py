@@ -2,7 +2,6 @@ from passlib.context import CryptContext
 
 # passlib is a password hashing library.
 # jose is a jwt library
-
 from jose import JWTError, jwt
 
 from datetime import datetime, timedelta
