@@ -28,6 +28,13 @@ def create_review(
     )
 
     db.add(review)
+    
+    # Update Product Rating & Count
+    reviews = db.query(Review).filter(Review.product_id == data.product_id).all()
+    all_ratings = [r.rating for r in reviews] + [data.rating]
+    product.review_count = len(all_ratings)
+    product.rating = sum(all_ratings) / len(all_ratings)
+
     db.commit()
     db.refresh(review)
 
@@ -60,6 +67,18 @@ def delete_review(
         raise HTTPException(status_code=403, detail="Not authorized to delete this review")
 
     db.delete(review)
+
+    # Update Product Rating & Count
+    product = db.query(Product).filter(Product.id == review.product_id).first()
+    remaining_reviews = db.query(Review).filter(Review.product_id == review.product_id, Review.id != review_id).all()
+    if remaining_reviews:
+        all_ratings = [r.rating for r in remaining_reviews]
+        product.review_count = len(all_ratings)
+        product.rating = sum(all_ratings) / len(all_ratings)
+    else:
+        product.review_count = 0
+        product.rating = 0
+
     db.commit()
 
     return {"message": "Review deleted"}
