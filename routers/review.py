@@ -20,6 +20,17 @@ def create_review(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
+    # Check for existing review
+    existing_review = db.query(Review).filter(
+        Review.user_id == current_user.id,
+        Review.product_id == data.product_id
+    ).first()
+    if existing_review:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You have already reviewed this product."
+        )
+
     review = Review(
         user_id=current_user.id,            
         product_id=data.product_id,
@@ -50,6 +61,19 @@ def get_product_reviews(product_id: int, db: Session = Depends(connect_db)):
 @review_router.get("/user/{user_id}")
 def get_user_reviews(user_id: int, db: Session = Depends(connect_db)):
     return db.query(Review).filter(Review.user_id == user_id).all()
+
+
+@review_router.get("/check/{product_id}")
+def check_user_review(
+    product_id: int, 
+    db: Session = Depends(connect_db),
+    current_user: User = Depends(get_current_user)
+):
+    review = db.query(Review).filter(
+        Review.user_id == current_user.id,
+        Review.product_id == product_id
+    ).first()
+    return {"reviewed": review is not None}
 
 
 @review_router.delete("/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
