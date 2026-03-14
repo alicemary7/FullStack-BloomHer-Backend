@@ -7,7 +7,13 @@ from routers.order import order_router
 from routers.review import review_router
 from routers.payment import payment_router
 from routers.contact import contact_router
+from db.database import engine, Base
+import models
+
 app = FastAPI(title="BloomHer API", version="1.0.0")
+
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
