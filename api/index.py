@@ -6,7 +6,7 @@ from routers.cart import cart_router
 from routers.order import order_router
 from routers.review import review_router
 from routers.payment import payment_router
-
+from routers.contact import contact_router
 app = FastAPI(title="BloomHer API", version="1.0.0")
 
 app.add_middleware(
@@ -37,3 +37,4 @@ app.include_router(cart_router)
 app.include_router(order_router)
 app.include_router(review_router)
 app.include_router(payment_router)
+app.include_router(contact_router)

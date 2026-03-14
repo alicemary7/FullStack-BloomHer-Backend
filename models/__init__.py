@@ -3,6 +3,7 @@ from models.users import User
 from models.cart import Cart
 from models.order import Order
 from models.review import Review
+from models.contact import Contact
 
 from models.payment import Payment
 
@@ -13,4 +14,5 @@ __all__ = [
     "Order",
     "Review",
     "Payment",
+    "Contact",
 ]
