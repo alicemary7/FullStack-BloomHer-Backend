@@ -12,7 +12,8 @@ contact_router = APIRouter(prefix="/contacts", tags=["Contacts"])
 @contact_router.post("/", status_code=status.HTTP_201_CREATED, response_model=ContactOut)
 def create_contact(
     data: ContactCreate,
-    db: Session = Depends(connect_db)
+    db: Session = Depends(connect_db),
+    current_user: User = Depends(get_current_user)
 ):
     try:
         new_contact = Contact(
