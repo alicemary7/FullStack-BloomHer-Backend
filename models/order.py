@@ -13,7 +13,8 @@ class Order(Base):
     quantity = Column(Integer, nullable=False, default=1)
     size = Column(String, nullable=True)
     total_amount = Column(Float, nullable=False)
-    status = Column(String, default="pending")  # pending, shipped, delivered
+    status = Column(String, default="pending")  # pending, shipped, delivered, cancelled
+    cancel_reason = Column(String, nullable=True)
     order_date = Column(DateTime, default=datetime.utcnow)
     
     email = Column(String, nullable=True)

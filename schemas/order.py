@@ -22,6 +22,7 @@ class OrderOut(BaseModel):
     size: Optional[str] = "Regular"
     total_amount: float
     status: str  
+    cancel_reason: Optional[str] = None
     order_date: datetime
     email: Optional[str] = None
     phone_number: Optional[str] = None

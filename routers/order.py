@@ -100,6 +100,7 @@ def get_order(
 def update_order_status(
     order_id: int,
     new_status: str,
+    cancel_reason: str = None,
     db: Session = Depends(connect_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -112,6 +113,9 @@ def update_order_status(
         raise HTTPException(status_code=404, detail="Order not found")
     
     order.status = new_status
+    if new_status == "cancelled" and cancel_reason:
+        order.cancel_reason = cancel_reason
+        
     db.commit()
     db.refresh(order)
     return order
