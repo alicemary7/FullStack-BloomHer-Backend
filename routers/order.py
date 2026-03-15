@@ -34,6 +34,13 @@ def create_order(
     if order_data.quantity >= 99:
         order_data.quantity = 98
 
+    # Check stock
+    if product.stock < order_data.quantity:
+        raise HTTPException(status_code=400, detail="Not enough stock available")
+
+    # Deduct stock
+    product.stock -= order_data.quantity
+
     shipping_fee = 0
     price = calculate_price_by_size(product.price, order_data.size)
 
@@ -112,6 +119,20 @@ def update_order_status(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    # Restore stock if the order is being cancelled
+    if new_status == "cancelled" and order.status != "cancelled":
+        product = db.query(Product).filter(Product.id == order.product_id).first()
+        if product:
+            product.stock += order.quantity
+            
+    # Deduct stock if order is being un-cancelled
+    elif new_status != "cancelled" and order.status == "cancelled":
+        product = db.query(Product).filter(Product.id == order.product_id).first()
+        if product:
+            if product.stock < order.quantity:
+                raise HTTPException(status_code=400, detail="Not enough stock available to un-cancel this order")
+            product.stock -= order.quantity
+            
     order.status = new_status
     if new_status == "cancelled" and cancel_reason:
         order.cancel_reason = cancel_reason
