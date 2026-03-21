@@ -40,6 +40,7 @@ def create_order(
 
     # Deduct stock
     product.stock -= order_data.quantity
+    db.add(product) # Explicitly mark this as updated for safety
 
     shipping_fee = 0
     price = calculate_price_by_size(product.price, order_data.size)
